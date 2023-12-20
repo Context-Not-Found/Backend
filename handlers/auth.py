@@ -19,6 +19,6 @@ async def create_user(user: user_schema.UserCreate, db: Session = Depends(get_db
     return await auth.create_user(user, db)
 
 
-@router.post("/login", response_model=user_schema.User)
+@router.post("/login", response_model=user_schema.UserLoginResp)
 async def login_user(user: user_schema.UserLogin, db: Session = Depends(get_db)):
     return await auth.login_user(user, db)

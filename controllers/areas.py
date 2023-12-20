@@ -1,5 +1,4 @@
 from math import atan2, cos, radians, sin, sqrt
-from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from models import sos

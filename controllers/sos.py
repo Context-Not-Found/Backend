@@ -1,19 +1,19 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
-from models import sos, user, community_chat
+from models import sos, community_chat
 from utils import sio
-from schemas import sos as sos_schema, community_chat as community_chat_schema
+from schemas import (
+    sos as sos_schema,
+    community_chat as community_chat_schema,
+    user as user_schema,
+)
 
 
-async def create_sos(request: sos_schema.SOSCreate, db: Session):
-    userResp = await user.get_user(db, user_id=request.user_id)
-    if userResp is None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="User Details not found"
-        )
-
-    name = str(userResp.name)
-    phone_number = str(userResp.phone_number)
+async def create_sos(
+    request: sos_schema.SOSCreate, user: user_schema.User, db: Session
+):
+    name = str(user.name)
+    phone_number = str(user.phone_number)
     map_link = (
         f"https://www.google.com/maps/search/?api=1&query={request.lat},{request.long}"
     )
@@ -33,17 +33,17 @@ Thanks,
 {name}
 {phone_number}
 """
-    chat_message, _ = await community_chat.create_community_chat_message(
+    chat_message = await community_chat.create_community_chat_message(
         db,
         message=community_chat_schema.CommunityChatMessageCreate(
-            message_text=message, user_id=request.user_id
+            message_text=message, user_id=user.user_id
         ),
     )
     await sio.send(
         data={
             "user": {
                 "user_id": str(chat_message.user_id),
-                "name": str(userResp.name),
+                "name": str(user.name),
             },
             "message_id": str(chat_message.message_id),
             "message_text": str(chat_message.message_text),
@@ -52,7 +52,7 @@ Thanks,
         namespace="/community_chat",
     )
 
-    return sos.create_sos(db, request)
+    return sos.create_sos(db, request, user.user_id)
 
 
 async def close_sos(user_id: int, db: Session):

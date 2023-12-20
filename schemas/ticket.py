@@ -7,7 +7,6 @@ class TicketBase(BaseModel):
 
 
 class TicketCreate(TicketBase):
-    user_id: int = Field(title="User ID", description="User ID of the User")
     report_content: str = Field(title="Ticket Report", description="Report from ticket")
     lat: float = Field(title="Latitude", description="Latitude from the ticket report")
     long: float = Field(

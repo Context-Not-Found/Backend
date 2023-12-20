@@ -1,11 +1,13 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from models import ticket
-from utils import get_db_manager, sio
+from utils import get_db_manager, sio, user_model
 from schemas import ticket as ticket_schema
 
 
-async def create_ticket(ticketSchema: ticket_schema.TicketCreate, db: Session):
+async def create_ticket(
+    ticketSchema: ticket_schema.TicketCreate, user_id: int, db: Session
+):
     teacher_id = await ticket.get_user_with_min_open_tickets(db)
     if teacher_id is None:
         raise HTTPException(
@@ -13,7 +15,7 @@ async def create_ticket(ticketSchema: ticket_schema.TicketCreate, db: Session):
             detail="No teacher found to open ticket with",
         )
 
-    return await ticket.create_ticket(db, ticketSchema, teacher_id)
+    return await ticket.create_ticket(db, ticketSchema, user_id, teacher_id)
 
 
 async def close_ticket(ticket_id: int, db: Session):
@@ -61,10 +63,15 @@ async def handle_new_connection(user_id: int, ticket_id: int):
         ):
             raise ConnectionRefusedError("user not allowed in this ticket room")
 
+        user = await user_model.get_user(db, user_id)
+        if user is None:
+            raise ConnectionRefusedError("Could not validate credentials")
+        return user, db_ticket
+
 
 async def handle_new_message(message: str, user_id: int, ticket_id: int):
     with get_db_manager() as db:
-        ticket_message, user = await ticket.create_ticket_message(
+        ticket_message = await ticket.create_ticket_message(
             db=db,
             message=ticket_schema.TicketChatMessageCreate(
                 ticket_id=ticket_id,
@@ -72,4 +79,4 @@ async def handle_new_message(message: str, user_id: int, ticket_id: int):
                 user_id=user_id,
             ),
         )
-        return ticket_message, user
+        return ticket_message

@@ -2,11 +2,11 @@
 import socketio
 
 # url = [
-#     "http://localhost:8000?ticket_id=1&user_id=5",
+#     "http://localhost:8000?ticket_id=5",
 #     "/tickets",
 # ]  # Ticket Chat room URL
 url = [
-    "http://localhost:8000?user_id=7",
+    "http://localhost:8000",
     "/community_chat",
 ]  # Community_chat URL
 
@@ -37,7 +37,13 @@ def disconnect():
 
 
 # Connect to the server
-sio.connect(url[0], namespaces=[url[1]])
+sio.connect(
+    url[0],
+    namespaces=[url[1]],
+    auth={
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwiZXhwIjoxNzAzNzE4NzY1fQ._u_wUOl42c3FkHlGW9WWLC2_2fkLuWq88yLE37p1CUU"
+    },
+)
 
 # Keep the script running to handle events
 sio.wait()

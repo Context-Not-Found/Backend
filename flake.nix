@@ -37,11 +37,16 @@
         unstructured = prev.unstructured.override {
           preferWheel = true;
         };
+
         simple-websocket = prev.simple-websocket.override {
           preferWheel = true;
         };
 
         pinecone-client = prev.pinecone-client.override {
+          preferWheel = true;
+        };
+
+        cryptography = prev.cryptography.override {
           preferWheel = true;
         };
       });

@@ -1,3 +1,4 @@
+from typing import Annotated
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
@@ -5,6 +6,7 @@ from sqlalchemy.orm import Session
 from dependencies.db import get_db
 from controllers import areas
 from schemas import areas as areas_schema
+from dependencies.auth import get_authorization
 
 
 router = APIRouter(
@@ -14,7 +16,10 @@ router = APIRouter(
 
 
 @router.get("/", response_model=areas_schema.Markers)
-async def get_areas(db: Session = Depends(get_db)):
+async def get_areas(
+    _: Annotated[int, Depends(get_authorization)],
+    db: Session = Depends(get_db),
+):
     markers = await areas.get_areas(db)
     return JSONResponse(
         status_code=status.HTTP_200_OK,

@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple
+from typing import Dict, List
 from sqlalchemy import (
     Column,
     Float,
@@ -38,9 +38,9 @@ async def get_open_sos_for_user_id(db: Session, user_id: int):
         )
 
 
-async def create_sos(db: Session, sos: sos_schema.SOSCreate):
+async def create_sos(db: Session, sos: sos_schema.SOSCreate, user_id: int):
     try:
-        sos = SOS(user_id=sos.user_id, lat=sos.lat, long=sos.long, is_open=True)
+        sos = SOS(user_id=user_id, lat=sos.lat, long=sos.long, is_open=True)
         db.add(sos)
         db.commit()
         db.refresh(sos)
@@ -48,7 +48,6 @@ async def create_sos(db: Session, sos: sos_schema.SOSCreate):
     except Exception as exc:
         # Handle any other unexpected errors
         db.rollback()
-        print(exc)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exc)
         )

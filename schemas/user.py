@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from schemas.token import Token
 
 
 class UserBase(BaseModel):
@@ -23,3 +24,7 @@ class User(UserBase):
 
     class Config:
         from_attributes = True
+
+
+class UserLoginResp(User):
+    token: Token = Field(title="Token", description="Access Token Details")

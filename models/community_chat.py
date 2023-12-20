@@ -11,7 +11,6 @@ from configuration.database import Base
 from fastapi import HTTPException, status
 from sqlalchemy import func
 from sqlalchemy.orm import Session
-from models import user
 from schemas import community_chat as community_chat_schema
 
 
@@ -33,16 +32,10 @@ async def create_community_chat_message(
         chat_message = CommunityChatMessage(
             message_text=message.message_text, user_id=message.user_id
         )
-
         db.add(chat_message)
         db.commit()
         db.refresh(chat_message)
-
-        userResp = (
-            db.query(user.User).filter(user.User.user_id == chat_message.user_id).one()
-        )
-
-        return chat_message, userResp
+        return chat_message
     except Exception as exc:
         db.rollback()
         raise HTTPException(

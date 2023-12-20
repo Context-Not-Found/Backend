@@ -82,11 +82,11 @@ async def get_user_with_min_open_tickets(db: Session):
 
 
 async def create_ticket(
-    db: Session, ticket: ticket_schema.TicketCreate, teacher_id: int
+    db: Session, ticket: ticket_schema.TicketCreate, user_id: int, teacher_id: int
 ):
     try:
         ticket_model = Ticket(
-            user_id=ticket.user_id,
+            user_id=user_id,
             teacher_id=teacher_id,
             is_anonymous=ticket.is_anonymous,
             is_open=True,
@@ -97,7 +97,7 @@ async def create_ticket(
 
         message = ticket_schema.TicketChatMessageCreate(
             message_text=ticket.report_content,
-            user_id=ticket.user_id,
+            user_id=user_id,
             ticket_id=int(str(ticket_model.ticket_id)),
         )
 
@@ -182,14 +182,7 @@ async def create_ticket_message(
         db.add(ticket_message)
         db.commit()
         db.refresh(ticket_message)
-
-        userResp = (
-            db.query(user.User)
-            .filter(user.User.user_id == ticket_message.user_id)
-            .one()
-        )
-
-        return ticket_message, userResp
+        return ticket_message
     except Exception as exc:
         db.rollback()
         raise HTTPException(

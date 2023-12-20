@@ -20,6 +20,9 @@ tiktoken = "^0.5.1"
 unstructured = "^0.10.14"
 django = "^5.0"
 python-socketio = {extras = ["client"], version = "^5.10.0"}
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+python-multipart = "^0.0.6"
 
 [tool.pyright]
 include = ["dependencies", "handlers", "models", "controllers", "configuration"]
