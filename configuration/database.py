@@ -3,6 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
+
 role = os.environ.get("DATABASE_ROLE")
 password = os.environ.get("DATABASE_PASSWORD")
 host = os.environ.get("DATABASE_HOST")
@@ -16,3 +17,7 @@ engine = create_engine(SQLALCHEMY_DATABASE_URL, echo=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
+
+
+def init_database_migrations():
+    Base.metadata.create_all(bind=engine)

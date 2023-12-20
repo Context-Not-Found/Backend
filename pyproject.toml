@@ -18,7 +18,11 @@ openai = "^0.28.0"
 langchain = "^0.0.288"
 tiktoken = "^0.5.1"
 unstructured = "^0.10.14"
+django = "^5.0"
+python-socketio = {extras = ["client"], version = "^5.10.0"}
 
+[tool.pyright]
+include = ["dependencies", "handlers", "models", "controllers", "configuration"]
 
 [build-system]
 requires = ["poetry-core"]
